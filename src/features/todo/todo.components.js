@@ -1,24 +1,36 @@
 import { useDispatch, useSelector } from "react-redux";
-import { add, remove, toggle, addAsync } from "./todo.slice";
+import { actions } from "./todo.reducer";
 import { useState } from "react";
 
 function TodoItem({ id, text, finished }) {
   const dispatch = useDispatch();
-
   return (
     <div
       className={`display-flex flex-row justify-content-start my-2 align-items-center`}
     >
       <input
         type="checkbox"
-        checked={finished}
-        onChange={(e) => dispatch(toggle({ id, checked: e.target.checked }))}
+        value={finished}
+        onChange={(e) =>
+          dispatch({
+            type: actions.todoChecked,
+            payload: {
+              id,
+              checked: e.target.checked,
+            },
+          })
+        }
       />
       <span className="mx-2">{`${text} ${finished ? "[finished]" : ""}`}</span>
       <span
         href="#"
         style={{ color: "blue", cursor: "pointer" }}
-        onClick={() => dispatch(remove({ id }))}
+        onClick={() =>
+          dispatch({
+            type: actions.todoRemove,
+            payload: { id },
+          })
+        }
       >
         x
       </span>
@@ -35,12 +47,13 @@ function AddTodo() {
       <input
         type="text"
         value={text}
+        placeholder="input todo"
         onChange={(e) => {
           setText(e.target.value);
         }}
         onKeyDown={(e) => {
           if (e.key === "Enter" && text) {
-            dispatch(add({ text }));
+            dispatch({ type: actions.todoAdd, payload: { text } });
             setText("");
           }
         }}
